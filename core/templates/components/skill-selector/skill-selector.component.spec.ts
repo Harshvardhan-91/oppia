@@ -474,4 +474,151 @@ describe('SkillSelectorComponent', () => {
       ]);
     }
   );
+
+  it('should sort skills by name in ascending order', () => {
+    const skills = [
+      ShortSkillSummary.create('skill3', 'Zebra skill'),
+      ShortSkillSummary.create('skill1', 'Apple skill'),
+      ShortSkillSummary.create('skill2', 'Banana skill'),
+    ];
+
+    component.sortOrder = 'nameAsc';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills[0].description).toBe('Apple skill');
+    expect(sortedSkills[1].description).toBe('Banana skill');
+    expect(sortedSkills[2].description).toBe('Zebra skill');
+  });
+
+  it('should sort skills by name in descending order', () => {
+    const skills = [
+      ShortSkillSummary.create('skill1', 'Apple skill'),
+      ShortSkillSummary.create('skill2', 'Banana skill'),
+      ShortSkillSummary.create('skill3', 'Zebra skill'),
+    ];
+
+    component.sortOrder = 'nameDesc';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills[0].description).toBe('Zebra skill');
+    expect(sortedSkills[1].description).toBe('Banana skill');
+    expect(sortedSkills[2].description).toBe('Apple skill');
+  });
+
+  it('should sort skills by recently updated', () => {
+    const skills = [
+      SkillSummary.createFromBackendDict({
+        id: '1',
+        description: 'Oldest skill',
+        language_code: 'en',
+        version: 1,
+        misconception_count: 0,
+        skill_model_created_on: 100000,
+        skill_model_last_updated: 100000,
+      }),
+      SkillSummary.createFromBackendDict({
+        id: '2',
+        description: 'Newest skill',
+        language_code: 'en',
+        version: 1,
+        misconception_count: 0,
+        skill_model_created_on: 100000,
+        skill_model_last_updated: 300000,
+      }),
+      SkillSummary.createFromBackendDict({
+        id: '3',
+        description: 'Middle skill',
+        language_code: 'en',
+        version: 1,
+        misconception_count: 0,
+        skill_model_created_on: 100000,
+        skill_model_last_updated: 200000,
+      }),
+    ];
+
+    component.sortOrder = 'recentlyUpdated';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills[0].description).toBe('Newest skill');
+    expect(sortedSkills[1].description).toBe('Middle skill');
+    expect(sortedSkills[2].description).toBe('Oldest skill');
+  });
+
+  it('should sort skills by recently created', () => {
+    const skills = [
+      SkillSummary.createFromBackendDict({
+        id: '1',
+        description: 'Middle skill',
+        language_code: 'en',
+        version: 1,
+        misconception_count: 0,
+        skill_model_created_on: 200000,
+        skill_model_last_updated: 200000,
+      }),
+      SkillSummary.createFromBackendDict({
+        id: '2',
+        description: 'Newest skill',
+        language_code: 'en',
+        version: 1,
+        misconception_count: 0,
+        skill_model_created_on: 300000,
+        skill_model_last_updated: 300000,
+      }),
+      SkillSummary.createFromBackendDict({
+        id: '3',
+        description: 'Oldest skill',
+        language_code: 'en',
+        version: 1,
+        misconception_count: 0,
+        skill_model_created_on: 100000,
+        skill_model_last_updated: 100000,
+      }),
+    ];
+
+    component.sortOrder = 'recentlyCreated';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills[0].description).toBe('Newest skill');
+    expect(sortedSkills[1].description).toBe('Middle skill');
+    expect(sortedSkills[2].description).toBe('Oldest skill');
+  });
+
+  it('should not sort skills when sort order is default', () => {
+    const skills = [
+      ShortSkillSummary.create('skill3', 'Zebra skill'),
+      ShortSkillSummary.create('skill1', 'Apple skill'),
+      ShortSkillSummary.create('skill2', 'Banana skill'),
+    ];
+
+    component.sortOrder = 'default';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills[0].description).toBe('Zebra skill');
+    expect(sortedSkills[1].description).toBe('Apple skill');
+    expect(sortedSkills[2].description).toBe('Banana skill');
+  });
+
+  it('should handle empty skills array', () => {
+    const skills: ShortSkillSummary[] = [];
+
+    component.sortOrder = 'nameAsc';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills).toEqual([]);
+  });
+
+  it('should sort skills case-insensitively', () => {
+    const skills = [
+      ShortSkillSummary.create('skill1', 'apple skill'),
+      ShortSkillSummary.create('skill2', 'Banana skill'),
+      ShortSkillSummary.create('skill3', 'CHERRY skill'),
+    ];
+
+    component.sortOrder = 'nameAsc';
+    const sortedSkills = component.sortSkills(skills);
+
+    expect(sortedSkills[0].description).toBe('apple skill');
+    expect(sortedSkills[1].description).toBe('Banana skill');
+    expect(sortedSkills[2].description).toBe('CHERRY skill');
+  });
 });

@@ -52,6 +52,7 @@ export class SkillSelectorComponent implements OnInit {
   currCategorizedSkills!: CategorizedSkills;
   selectedSkill!: string;
   skillFilterText: string = '';
+  sortOrder: string = 'default';
   topicFilterList: {topicName: string; checked: boolean}[] = [];
   subTopicFilterDict: SubTopicFilterDict = {};
   initialSubTopicFilterDict: SubTopicFilterDict = {};
@@ -212,6 +213,49 @@ export class SkillSelectorComponent implements OnInit {
     return this.untriagedSkillSummaries.filter(val => {
       return filteredSkills.includes(val.description);
     });
+  }
+
+  sortSkills<T extends ShortSkillSummary | SkillSummary>(skills: T[]): T[] {
+    if (this.sortOrder === 'default' || skills.length === 0) {
+      return skills;
+    }
+
+    const sortedSkills = [...skills];
+
+    switch (this.sortOrder) {
+      case 'nameAsc':
+        sortedSkills.sort((a, b) =>
+          a.description.toLowerCase().localeCompare(b.description.toLowerCase())
+        );
+        break;
+      case 'nameDesc':
+        sortedSkills.sort((a, b) =>
+          b.description.toLowerCase().localeCompare(a.description.toLowerCase())
+        );
+        break;
+      case 'recentlyUpdated':
+        // Only SkillSummary has skillModelLastUpdated property.
+        if ('skillModelLastUpdated' in sortedSkills[0]) {
+          sortedSkills.sort((a, b) => {
+            const aUpdated = (a as SkillSummary).skillModelLastUpdated;
+            const bUpdated = (b as SkillSummary).skillModelLastUpdated;
+            return bUpdated - aUpdated;
+          });
+        }
+        break;
+      case 'recentlyCreated':
+        // Only SkillSummary has skillModelCreatedOn property.
+        if ('skillModelCreatedOn' in sortedSkills[0]) {
+          sortedSkills.sort((a, b) => {
+            const aCreated = (a as SkillSummary).skillModelCreatedOn;
+            const bCreated = (b as SkillSummary).skillModelCreatedOn;
+            return bCreated - aCreated;
+          });
+        }
+        break;
+    }
+
+    return sortedSkills;
   }
 
   clearAllFilters(): void {
