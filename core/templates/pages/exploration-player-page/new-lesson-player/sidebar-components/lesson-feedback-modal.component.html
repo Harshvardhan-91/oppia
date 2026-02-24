@@ -15,6 +15,18 @@
         <span>{{ 'I18N_PLAYER_STAY_ANONYMOUS' | translate }}</span>
       </label>
     </div>
+    <div class="alert alert-warning" *ngIf="!isLoggedIn || isSubmitterAnonymized" style="margin-top: 10px; font-size: 14px;">
+      <i class="material-icons" style="vertical-align: middle; margin-right: 5px;">info</i>
+      <strong>Note:</strong>
+      <span *ngIf="!isLoggedIn">
+        You're submitting feedback anonymously. To receive replies from the lesson creator, please
+        <a href="/signup" target="_blank">sign in</a> or
+        <a href="/signup" target="_blank">create an account</a>.
+      </span>
+      <span *ngIf="isLoggedIn && isSubmitterAnonymized">
+        Anonymous feedback will not receive reply notifications. Uncheck "Stay Anonymous" to see creator responses in your feedback updates page.
+      </span>
+    </div>
   </div>
 
   <div class="modal-footer">
